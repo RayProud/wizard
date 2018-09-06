@@ -7,5 +7,6 @@ export default {
   KEY_LEFT: `${ESC}[D`,
   KEY_ENTER: '\u2324',
   KEY_RETURN: '\u000D',
+  KEY_SPACE: '\u0020',
   KEY_ESC: '\u0003',
 };

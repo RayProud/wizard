@@ -6,6 +6,7 @@
   "scripts": {
     "start": "babel src -d lib -w",
     "build": "babel src -d lib",
+    "build:demo": "babel example/src -d build",
     "precommit": "lint-staged",
     "prepare": "npm run build"
   },

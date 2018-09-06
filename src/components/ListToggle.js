@@ -99,14 +99,17 @@ class ListToggle extends Component {
       case this.keys.KEY_SPACE:
         this.selected[this.chosen] = this.selected[this.chosen]
           ? null
-          : this.options[this.chosen];
+          : this.options[this.chosen].value;
         return null;
       case this.keys.KEY_RETURN:
       case this.keys.KEY_ENTER:
         this.write(this.ansi.eraseDown);
         process.stdin.removeAllListeners('data');
         this.handleEscape();
-        return this.selected.filter(Boolean);
+        return {
+          value: this.selected.filter(Boolean),
+          then: this.options[0].then,
+        };
       default:
         return null;
     }

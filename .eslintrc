@@ -3,6 +3,8 @@
   "parser": "babel-eslint",
   "rules": {
     "operator-linebreak": "off",
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "class-methods-use-this": "off",
+    "no-nested-ternary": "off"
   }
 }

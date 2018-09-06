@@ -1,16 +1,45 @@
 import Component from './Component';
 
-import listSelect from './ListSelect';
+import list from './List';
 import listToggle from './ListToggle';
 
 class Wizard extends Component {
-  constructor(steps, components) {
+  constructor(steps, styles, components) {
     super();
 
-    this.compoents = {
-      listSelect,
+    this.components = {
+      list,
       listToggle,
       ...components,
+    };
+
+    const styleDefaults = {
+      caret: {
+        icon: '❯',
+        color: this.colors.white,
+        paddingRight: 1,
+        paddingLeft: 0,
+      },
+      list: {
+        wrapToTop: false,
+        defaultColor: this.colors.gray,
+        selectedColor: this.colors.white,
+        toggledColor: this.colors.red,
+        preserveAnswer: true,
+        paddingLeft: 2,
+        toggle: {
+          icon: '*',
+          color: this.colors.red,
+          paddingRight: 1,
+          paddingLeft: 0,
+        },
+      },
+      question: { color: this.colors.white, prefix: '', paddingLeft: 0 },
+    };
+
+    this.styles = {
+      ...styleDefaults,
+      ...styles,
     };
 
     this.steps = steps;
@@ -22,12 +51,14 @@ class Wizard extends Component {
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
     this.write(this.ansi.cursorHide);
+
     this.handleEscape();
+
+    this.traverse(this.steps);
   }
 
   async traverse(section) {
     if (!this.validateSection(section)) {
-      process.stdout.write('Error in Configuration\n');
       this.write('Error in Configuration');
       this.cleanAndExit();
     }
@@ -35,10 +66,8 @@ class Wizard extends Component {
     const ComponentType = this.components[section.type];
     if (ComponentType) {
       const component = new ComponentType(section, this.styles);
-
       const response = await component.init();
       this.selections[section.id] = response.value;
-      this.write(JSON.stringify(this.selections));
 
       if (!response.then) {
         this.cleanAndExit();
@@ -48,15 +77,19 @@ class Wizard extends Component {
         return this.traverse(section.next[response.then]);
       }
 
-      this.write('Error in Configuration');
+      this.newline();
+      this.write('Error in configuration');
       this.cleanAndExit();
       return null;
     }
 
+    this.newline();
+    this.write('Error importing component');
+    this.cleanAndExit();
     return null;
   }
 
-  static validateSection(section) {
+  validateSection(section) {
     return (
       (section.question || section.options || section.id || section.type) &&
       true

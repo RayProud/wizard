@@ -1,6 +1,6 @@
 import Component from './Component';
 
-class ListToggle extends Component {
+class List extends Component {
   constructor(question, styles) {
     super();
 
@@ -8,7 +8,6 @@ class ListToggle extends Component {
     this.question = question.question;
     this.options = question.options;
 
-    this.selected = new Array(this.options.length);
     this.chosen = 0;
   }
 
@@ -41,7 +40,7 @@ class ListToggle extends Component {
           this.write(
             this.styles.caret.color(
               this.styles.caret.icon.padStart(
-                this.styles.caret.paddingLeft + this.styles.caret.paddingLeft,
+                this.styles.caret.paddingLeft + 1,
                 ' '.repeat(this.styles.caret.paddingLeft),
               ),
             ) +
@@ -50,21 +49,6 @@ class ListToggle extends Component {
           );
         } else {
           this.write(this.styles.list.selectedColor(formatted));
-        }
-      } else if (this.selected[index]) {
-        if (this.styles.list.toggle.icon) {
-          this.write(
-            this.styles.list.toggle.color(
-              this.styles.list.toggle.icon.padStart(
-                this.styles.list.toggle.paddingLeft + 1,
-                ' '.repeat(this.styles.list.toggle.paddingLeft),
-              ),
-            ) +
-              ' '.repeat(this.styles.list.toggle.paddingRight) +
-              this.styles.list.toggledColor(option.name),
-          );
-        } else {
-          this.write(this.styles.list.toggledColor(formatted));
         }
       } else {
         this.write(this.styles.list.defaultColor(formatted));
@@ -96,21 +80,16 @@ class ListToggle extends Component {
             : this.chosen + 1;
         this.updateDisplay();
         return null;
-      case this.keys.KEY_SPACE:
-        this.selected[this.chosen] = this.selected[this.chosen]
-          ? null
-          : this.options[this.chosen];
-        return null;
       case this.keys.KEY_RETURN:
       case this.keys.KEY_ENTER:
         this.write(this.ansi.eraseDown);
         process.stdin.removeAllListeners('data');
         this.handleEscape();
-        return this.selected.filter(Boolean);
+        return this.options[this.chosen];
       default:
         return null;
     }
   }
 }
 
-export default ListToggle;
+export default List;

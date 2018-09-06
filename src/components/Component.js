@@ -1,37 +1,34 @@
 import ansiEscapes from 'ansi-escapes';
+import chalk from 'chalk';
+
 import keys from '../constants/keys';
 
 class Component {
-  constructor(styles) {
-    this.styles = styles;
-
+  constructor() {
     this.handleEscape();
   }
 
   ansi = ansiEscapes;
 
+  colors = chalk;
+
   keys = keys;
 
-  static write(content) {
-    let formatted = content;
-
-    if (this.style.caret) {
-      formatted = formatted.padStart(formatted.length + 2, '  ');
-    }
-
-    process.stdout.write(`\r${formatted}`);
+  write(text) {
+    process.stdout.write(`\r${text}`);
   }
 
-  static newline() {
+  newline() {
     process.stdout.write('\r\n');
   }
 
-  static cleanAndExit() {
+  cleanAndExit() {
     process.stdout.write(ansiEscapes.cursorShow);
     process.exit();
   }
 
-  static handleEscape() {
+  // Ensure app is killable
+  handleEscape() {
     process.stdin.on('data', key => {
       switch (key) {
         case keys.KEY_ESC:

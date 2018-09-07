@@ -19,6 +19,7 @@ import Wizard from 'wizard';
 import questions from './questions';
 
 const main = async () => {
+  const wizard = new Wizard(questions);
   const selections = await wizard.init();
   console.log(selections);
 };
@@ -36,9 +37,11 @@ main();
 - **styles** (Object **optional** - see _Styles object_) containing style options for your wizard.
 - **components** (Object **optional** - see _Custom Components_) containing custom input components.
 
-#### `wizard.init()`
+#### `wizard.init() -> Promise<Object>`
 
 ##### `init` initializes your setup wizard.
+
+- It returns the Promise of a `selection` object.
 
 ---
 
@@ -179,7 +182,7 @@ class MyComponent extends Component {
 
 Now import it and use it:
 
-```
+```javascript
 import Wizard from 'wizard';
 import MyComponent from './MyComponent';
 
@@ -189,8 +192,11 @@ const question = {
   type: 'myComponent',
 };
 
-const wizard = new Wizard(question, {}, { myComponent: MyComponent });
-wizard.init();
+const main = async () => {
+  const wizard = new Wizard(questions, {}, { myComponent: MyComponent });
+  const selections = await wizard.init();
+  console.log(selections);
+};
 ```
 
 For coloring, we make the `chalk` library useful by way of `this.color`. Check out the library here: https://github.com/chalk/chalk

@@ -1,9 +1,13 @@
-<div align="center"><img src="https://bit.ly/2CmaW7u" width="100" height="auto"  />
+<div align="center">
+<img src="https://bit.ly/2CmaW7u" width="100" height="auto"  />
 <br>
-<span style="font-size: 40px">Wizard</span></div>
--
-<span style="font-size: 16px">
-Wizard is a library that makes creating installing or setup wizards dead simple.
+Wizard
+<br>
+<img src="https://media.giphy.com/media/cYeQv0qqTYvB7NvAvA/giphy.gif" />
+<br>
+The fastest way to build CLI setup wizards.
+</div>
+<br>
 
 ##### Step 1
 
@@ -35,7 +39,3 @@ next: {
   }
 }
 ```
-
-##### Step 2
-
-</span>

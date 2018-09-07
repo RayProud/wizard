@@ -114,6 +114,19 @@ The styles object is passed in on the creation of the wizard. There are defaults
 }
 ```
 
+### Input Types
+Right now Wizard includes the following input types:
+
+#### `List` - A list of choices, select one with `Enter`
+- **Needs:**
+  - options (Array of Options)
+- Use it by selecting `list` in your questions object: `type: 'list'`
+
+#### `ListToggle` - A list of choices, select multiple with `Space`
+- **Needs:**
+  - options (Array of Options)
+- Use it by selecting `listToggle` in your questions object: `type: 'listToggle'`
+
 ### Custom Components
 
 You can make your very own personalized inputs if you can't achieve what you wish through styling. A `Component` class is made available through: `import { Component } from 'wizard` that allows you to create and use your own inputs.

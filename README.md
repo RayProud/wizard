@@ -14,24 +14,27 @@ The fastest way to build CLI setup wizards.
 `npm install wizard`
 
 ```javascript
-import Wizard from '../../lib';
+import Wizard from 'wizard';
 
 import questions from './questions';
 
-const wizard = new Wizard(questions);
-wizard.init();
+const main = async () => {
+  const selections = await wizard.init();
+  console.log(selections);
+};
+
+main();
 ```
 
 ## Api
-
 
 #### `Wizard(questions, [styles, components])`
 
 ##### `Wizard` represents a new setup wizard.
 
-- **questions** (Object - see *Questions object*) containing the complete specification of your setup wizard.
-- **styles** (Object **optional** - see *Styles object*) containing style options for your wizard.
-- **components** (Object **optional** - see *Custom Components*) containing custom input components.
+- **questions** (Object - see _Questions object_) containing the complete specification of your setup wizard.
+- **styles** (Object **optional** - see _Styles object_) containing style options for your wizard.
+- **components** (Object **optional** - see _Custom Components_) containing custom input components.
 
 #### `wizard.init()`
 
@@ -40,14 +43,17 @@ wizard.init();
 ---
 
 ### Questions Object
-The *Questions Object* represents every step of your setup wizard. It is an infinitely nested object representing the flow of choices from the first question, to the last.
 
-Every `section` of the *Questions Object* must have the following fields:
+The _Questions Object_ represents every step of your setup wizard. It is an infinitely nested object representing the flow of choices from the first question, to the last.
+
+Every `section` of the _Questions Object_ must have the following fields:
+
 - **question** (string) Your question
 - **id** (string) The variable name that the answer will be stored under.
-- **type** (string) The type of input asociated with this question (See *Input types*).
+- **type** (string) The type of input asociated with this question (See _Input types_).
 
 Depending on the input type, you may be required to have:
+
 - **options** (Array of `option`) All options for a question (List & ListToggle inputs).
   - **option** - (Object) Represents one choice
     - **name** (string) Your choice.
@@ -115,14 +121,17 @@ The styles object is passed in on the creation of the wizard. There are defaults
 ```
 
 ### Input Types
+
 Right now Wizard includes the following input types:
 
 #### `List` - A list of choices, select one with `Enter`
+
 - **Needs:**
   - options (Array of Options)
 - Use it by selecting `list` in your questions object: `type: 'list'`
 
 #### `ListToggle` - A list of choices, select multiple with `Space`
+
 - **Needs:**
   - options (Array of Options)
 - Use it by selecting `listToggle` in your questions object: `type: 'listToggle'`
@@ -132,6 +141,7 @@ Right now Wizard includes the following input types:
 You can make your very own personalized inputs if you can't achieve what you wish through styling. A `Component` class is made available through: `import { Component } from 'wizard` that allows you to create and use your own inputs.
 
 Each Input must have an `init` method.
+
 - **init** A method that starts your input - This must be a promise!
 
 To create a basic component:
@@ -153,7 +163,7 @@ class MyComponent extends Component {
       });
     });
   }
-  
+
   handleInput(key) {
     switch(key) {
       this.keys.KEY_SPACE:

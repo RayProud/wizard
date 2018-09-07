@@ -54,39 +54,40 @@ class Wizard extends Component {
 
     this.handleEscape();
 
-    this.traverse(this.steps);
+    return this.traverse(this.steps);
   }
 
-  async traverse(section) {
-    if (!this.validateSection(section)) {
-      this.write('Error in Configuration');
-      this.cleanAndExit();
-    }
-
-    const ComponentType = this.components[section.type];
-    if (ComponentType) {
-      const component = new ComponentType(section, this.styles);
-      const response = await component.init();
-      this.selections[section.id] = response.value;
-
-      if (!response.then) {
+  traverse(section) {
+    return new Promise(async (resolve, reject) => {
+      if (!this.validateSection(section)) {
+        this.write('Error in Configuration');
         this.cleanAndExit();
+      }
+
+      const ComponentType = this.components[section.type];
+      if (ComponentType) {
+        const component = new ComponentType(section, this.styles);
+        const response = await component.init();
+        this.selections[section.id] = response.value;
+
+        if (!response.then) {
+          this.write(this.ansi.cursorShow);
+          resolve(this.selections);
+          return null;
+        }
+        if (section.next[response.then]) {
+          resolve(await this.traverse(section.next[response.then]));
+        }
+
+        this.write(this.ansi.cursorShow);
+        reject();
         return null;
       }
-      if (section.next[response.then]) {
-        return this.traverse(section.next[response.then]);
-      }
 
-      this.newline();
-      this.write('Error in configuration');
-      this.cleanAndExit();
+      this.write(this.ansi.cursorShow);
+      reject();
       return null;
-    }
-
-    this.newline();
-    this.write('Error importing component');
-    this.cleanAndExit();
-    return null;
+    });
   }
 
   validateSection(section) {

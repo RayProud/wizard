@@ -1,6 +1,6 @@
 export default {
   question: 'How would you like to configure your boilerplate?',
-  id: 'config-type',
+  id: 'configType',
   type: 'list',
   options: [
     { name: 'From a template', value: 'template', then: 'template' },
@@ -34,7 +34,7 @@ export default {
       next: {
         testing: {
           question: 'Which testing framework would you like to use?',
-          id: 'test-framework',
+          id: 'testFramework',
           type: 'list',
           options: [
             { name: 'Jest', value: 'jest', then: 'useReact' },
@@ -44,7 +44,7 @@ export default {
           next: {
             useReact: {
               question: 'Will you be using react?',
-              id: 'use-react',
+              id: 'useReact',
               type: 'list',
               options: [
                 { name: 'Yes', value: 'yes' },

@@ -67,7 +67,7 @@ Depending on the input type, you may be required to have:
 Example:
 
 ```
-question: 'My question'
+question: 'My question',
 id: 'my-question',
 type: 'list',
 options: [
@@ -85,10 +85,10 @@ then: {
     id: 'question-3',
     type: 'list',
     options: [
-      { name: 'Answer 1, value: 'answer-1' },
-      { name: 'Answer 2, value: 'answer-2' },
-      { name: 'Answer 3, value: 'answer-3' },
-      { name: 'Answer 4, value: 'answer-4' },
+      { name: 'Answer 1', value: 'answer-1' },
+      { name: 'Answer 2', value: 'answer-2' },
+      { name: 'Answer 3', value: 'answer-3' },
+      { name: 'Answer 4', value: 'answer-4' },
     ]
   }
 }

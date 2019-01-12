@@ -74,7 +74,7 @@ options: [
   { name: 'Answer 1', value: 'answer-1', then: 'question2' },
   { name: 'Answer 2', value: 'answer-2', then: 'question3' },
 ],
-next: {
+then: {
   question2: {
     question: 'Question 2',
     id: 'question-2',

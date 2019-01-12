@@ -75,8 +75,8 @@ class Wizard extends Component {
           resolve(this.selections);
           return null;
         }
-        if (section.next[response.then]) {
-          resolve(await this.traverse(section.next[response.then]));
+        if (section.then[response.then]) {
+          resolve(await this.traverse(section.then[response.then]));
         }
 
         this.write(this.ansi.cursorShow);

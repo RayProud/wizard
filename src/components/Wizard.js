@@ -65,6 +65,7 @@ class Wizard extends Component {
       }
 
       const ComponentType = this.components[section.type];
+
       if (ComponentType) {
         const component = new ComponentType(section, this.styles);
         const response = await component.init();
@@ -75,18 +76,33 @@ class Wizard extends Component {
           resolve(this.selections);
           return null;
         }
-        if (section.then[response.then]) {
+
+        if (!section.then) {
+          this.write(this.ansi.cursorShow);
+          reject(`Section '${section.id}' doesn't have 'then' property`);
+          return null;
+        }
+
+        if (section.then && section.then[response.then]) {
           resolve(await this.traverse(section.then[response.then]));
+          return null;
         }
 
         this.write(this.ansi.cursorShow);
-        reject();
+        reject('Unknown error');
         return null;
       }
 
       this.write(this.ansi.cursorShow);
-      reject();
+      reject(
+        `Type ${
+          section.type
+        } isn't implemented yet. You can write your own custom components.\n`,
+      );
       return null;
+    }).catch(e => {
+      console.error(this.colors.red(e));
+      this.cleanAndExit();
     });
   }
 

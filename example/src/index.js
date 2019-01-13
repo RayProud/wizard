@@ -5,9 +5,7 @@ import questions from './questions';
 const main = async () => {
   const wizard = new Wizard(questions);
   const selections = await wizard.init();
-  console.log('selections', selections);
-
-  process.exit();
+  console.log(selections);
 };
 
 main();

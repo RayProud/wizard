@@ -58,10 +58,9 @@ var main =
 
                 case 3:
                   selections = _context.sent;
-                  console.log('selections', selections);
-                  process.exit();
+                  console.log(selections);
 
-                case 6:
+                case 5:
                 case 'end':
                   return _context.stop();
               }

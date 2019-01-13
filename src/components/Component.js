@@ -3,13 +3,14 @@ import chalk from 'chalk';
 
 import keys from '../constants/keys';
 const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+readline.emitKeypressEvents(process.stdin);
 
 class Component {
-  constructor() {
-    readline.emitKeypressEvents(process.stdin);
-    this.handleEscape();
-  }
-
   ansi = ansiEscapes;
 
   colors = chalk;
@@ -22,6 +23,10 @@ class Component {
 
   newline() {
     process.stdout.write('\r\n');
+  }
+
+  stopListeningReadline() {
+    rl.close();
   }
 
   cleanAndExit() {

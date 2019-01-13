@@ -54,7 +54,11 @@ class Wizard extends Component {
 
     this.handleEscape();
 
-    return this.traverse(this.steps);
+    return this.traverse(this.steps).then(selections => {
+      this.stopListeningReadline();
+
+      return selections;
+    });
   }
 
   traverse(section) {

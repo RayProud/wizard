@@ -17,15 +17,22 @@ class ListToggle extends Component {
       this.write(this.styles.question.color(this.question));
       this.newline();
 
-      process.stdin.on('data', key => {
-        const value = this.handleInput(key);
-        if (value !== null) {
-          resolve(value);
-        }
-      });
+      this.handleOnData = this.handleOnData.bind(this, resolve);
+
+      process.stdin.on('data', this.handleOnData);
 
       this.updateDisplay();
     });
+  }
+
+  handleOnData(resolve, key) {
+    const value = this.handleInput(key);
+
+    if (value !== null) {
+      process.stdin.removeListener('data', this.handleOnData);
+      this.handleOnData = null;
+      resolve(value);
+    }
   }
 
   updateDisplay() {
@@ -104,8 +111,7 @@ class ListToggle extends Component {
       case this.keys.KEY_RETURN:
       case this.keys.KEY_ENTER:
         this.write(this.ansi.eraseDown);
-        process.stdin.removeAllListeners('data');
-        this.handleEscape();
+
         return {
           value: this.selected.filter(Boolean),
           then: this.options[0].then,

@@ -6,7 +6,7 @@ export default {
     { name: 'From a template', value: 'template', then: 'template' },
     { name: 'Custom', value: 'custom', then: 'custom' },
   ],
-  next: {
+  then: {
     template: {
       question: 'Pick a template:',
       id: 'template',
@@ -31,7 +31,7 @@ export default {
         { name: 'Prettier', value: 'prettier', then: 'testing' },
         { name: 'Editorconfig', value: 'editorconfig', then: 'testing' },
       ],
-      next: {
+      then: {
         testing: {
           question: 'Which testing framework would you like to use?',
           id: 'testFramework',
@@ -41,7 +41,7 @@ export default {
             { name: 'Mocha', value: 'mocha', then: 'useReact' },
             { name: 'Jasmine', value: 'jasmine', then: 'useReact' },
           ],
-          next: {
+          then: {
             useReact: {
               question: 'Will you be using react?',
               id: 'useReact',

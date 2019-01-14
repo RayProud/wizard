@@ -2,12 +2,15 @@ import ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
 
 import keys from '../constants/keys';
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+readline.emitKeypressEvents(process.stdin);
 
 class Component {
-  constructor() {
-    this.handleEscape();
-  }
-
   ansi = ansiEscapes;
 
   colors = chalk;
@@ -22,6 +25,10 @@ class Component {
     process.stdout.write('\r\n');
   }
 
+  stopListeningReadline() {
+    rl.close();
+  }
+
   cleanAndExit() {
     process.stdout.write(ansiEscapes.cursorShow);
     process.exit();
@@ -29,13 +36,9 @@ class Component {
 
   // Ensure app is killable
   handleEscape() {
-    process.stdin.on('data', key => {
-      switch (key) {
-        case keys.KEY_ESC:
-          this.cleanAndExit();
-          break;
-        default:
-          break;
+    process.stdin.on('keypress', (_str, key) => {
+      if ((key.ctrl && key.name === 'c') || key.name === 'escape') {
+        this.cleanAndExit();
       }
     });
   }

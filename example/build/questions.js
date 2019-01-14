@@ -20,7 +20,7 @@ var _default = {
       then: 'custom',
     },
   ],
-  next: {
+  then: {
     template: {
       question: 'Pick a template:',
       id: 'template',
@@ -84,7 +84,7 @@ var _default = {
           then: 'testing',
         },
       ],
-      next: {
+      then: {
         testing: {
           question: 'Which testing framework would you like to use?',
           id: 'testFramework',
@@ -106,7 +106,7 @@ var _default = {
               then: 'useReact',
             },
           ],
-          next: {
+          then: {
             useReact: {
               question: 'Will you be using react?',
               id: 'useReact',

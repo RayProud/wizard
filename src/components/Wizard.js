@@ -1,4 +1,4 @@
-// TODO - Put less responsibility in components.
+// TODO - Add tests
 
 import Component from './Component';
 

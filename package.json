@@ -1,6 +1,6 @@
 {
   "name": "wizard",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Wizard is a highly configurable library for building complex CLI based installation/setup wizards",
   "main": "lib/index.js",
   "scripts": {

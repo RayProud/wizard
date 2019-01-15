@@ -2,7 +2,7 @@ import Component from './Component';
 
 class List extends Component {
   constructor(question, styles) {
-    super();
+    super(styles);
 
     this.styles = styles;
     this.question = question.question;
@@ -13,32 +13,41 @@ class List extends Component {
 
   init() {
     return new Promise(resolve => {
-      this.write(this.styles.question.color(this.question));
-      this.newline();
+      this.onKeyEnter = () => {
+        this.clear();
+        resolve(this.options[this.chosen]);
+      };
 
-      this.handleOnData = this.handleOnData.bind(this, resolve);
+      this.onKeyUp = () => {
+        this.chosen =
+          this.chosen === 0
+            ? this.styles.list.wrapToTop
+              ? this.options.length - 1
+              : 0
+            : this.chosen - 1;
+        this.update();
+      };
 
-      process.stdin.on('data', this.handleOnData);
+      this.onKeyDown = () => {
+        this.chosen =
+          this.chosen === this.options.length - 1
+            ? this.styles.list.wrapToTop
+              ? 0
+              : this.options.length - 1
+            : this.chosen + 1;
+        this.update();
+      };
 
-      this.updateDisplay();
+      this.initialize(this.question);
     });
   }
 
-  handleOnData(resolve, key) {
-    const value = this.handleInput(key);
-
-    if (value !== null) {
-      process.stdin.removeListener('data', this.handleOnData);
-      this.handleOnData = null;
-      resolve(value);
-    }
-  }
-
-  updateDisplay() {
+  update() {
     this.options.forEach((option, index) => {
-      let formatted = option.name;
-      formatted = formatted.padStart(
-        formatted.length + this.styles.list.paddingLeft,
+      this.write(this.ansi.eraseLine);
+
+      const formatted = option.name.padStart(
+        option.name.length + this.styles.list.paddingLeft,
         ' '.repeat(this.styles.list.paddingLeft),
       );
 
@@ -60,41 +69,9 @@ class List extends Component {
       } else {
         this.write(this.styles.list.defaultColor(formatted));
       }
-
       this.newline();
     });
-
     this.write(this.ansi.cursorUp(this.options.length));
-  }
-
-  handleInput(key) {
-    switch (key) {
-      case this.keys.KEY_UP:
-        this.chosen =
-          this.chosen === 0
-            ? this.styles.list.wrapToTop
-              ? this.options.length - 1
-              : 0
-            : this.chosen - 1;
-        this.updateDisplay();
-        return null;
-      case this.keys.KEY_DOWN:
-        this.chosen =
-          this.chosen === this.options.length - 1
-            ? this.styles.list.wrapToTop
-              ? 0
-              : this.options.length - 1
-            : this.chosen + 1;
-        this.updateDisplay();
-        return null;
-      case this.keys.KEY_RETURN:
-      case this.keys.KEY_ENTER:
-        this.write(this.ansi.eraseDown);
-
-        return this.options[this.chosen];
-      default:
-        return null;
-    }
   }
 }
 

@@ -1,5 +1,3 @@
-import '@babel/polyfill';
-
 import Wizard from './components/Wizard';
 import Component from './components/Component';
 

@@ -8,5 +8,5 @@ export default {
   KEY_ENTER: '\u2324',
   KEY_RETURN: '\u000D',
   KEY_SPACE: '\u0020',
-  KEY_ESC: '\u0003',
+  CTRL_C: '\u0003',
 };

@@ -2,7 +2,7 @@ import Component from './Component';
 
 class ListToggle extends Component {
   constructor(question, styles) {
-    super();
+    super(styles);
 
     this.styles = styles;
     this.question = question.question;
@@ -14,29 +14,48 @@ class ListToggle extends Component {
 
   init() {
     return new Promise(resolve => {
-      this.write(this.styles.question.color(this.question));
-      this.newline();
+      this.onKeyEnter = () => {
+        this.clear();
+        resolve({
+          value: this.selected.filter(Boolean),
+          then: this.options[0].then,
+        });
+      };
 
-      this.handleOnData = this.handleOnData.bind(this, resolve);
+      this.onKeyUp = () => {
+        this.chosen =
+          this.chosen === 0
+            ? this.styles.list.wrapToTop
+              ? this.options.length - 1
+              : 0
+            : this.chosen - 1;
+        this.update();
+      };
 
-      process.stdin.on('data', this.handleOnData);
+      this.onKeyDown = () => {
+        this.chosen =
+          this.chosen === this.options.length - 1
+            ? this.styles.list.wrapToTop
+              ? 0
+              : this.options.length - 1
+            : this.chosen + 1;
+        this.update();
+      };
 
-      this.updateDisplay();
+      this.onKeySpace = () => {
+        this.selected[this.chosen] = this.selected[this.chosen]
+          ? null
+          : this.options[this.chosen].value;
+      };
+
+      this.initialize(this.question);
     });
   }
 
-  handleOnData(resolve, key) {
-    const value = this.handleInput(key);
-
-    if (value !== null) {
-      process.stdin.removeListener('data', this.handleOnData);
-      this.handleOnData = null;
-      resolve(value);
-    }
-  }
-
-  updateDisplay() {
+  update() {
     this.options.forEach((option, index) => {
+      this.write(this.ansi.eraseLine);
+
       let formatted = option.name;
       formatted = formatted.padStart(
         formatted.length + this.styles.list.paddingLeft,
@@ -76,49 +95,9 @@ class ListToggle extends Component {
       } else {
         this.write(this.styles.list.defaultColor(formatted));
       }
-
       this.newline();
     });
-
     this.write(this.ansi.cursorUp(this.options.length));
-  }
-
-  handleInput(key) {
-    switch (key) {
-      case this.keys.KEY_UP:
-        this.chosen =
-          this.chosen === 0
-            ? this.styles.list.wrapToTop
-              ? this.options.length - 1
-              : 0
-            : this.chosen - 1;
-        this.updateDisplay();
-        return null;
-      case this.keys.KEY_DOWN:
-        this.chosen =
-          this.chosen === this.options.length - 1
-            ? this.styles.list.wrapToTop
-              ? 0
-              : this.options.length - 1
-            : this.chosen + 1;
-        this.updateDisplay();
-        return null;
-      case this.keys.KEY_SPACE:
-        this.selected[this.chosen] = this.selected[this.chosen]
-          ? null
-          : this.options[this.chosen].value;
-        return null;
-      case this.keys.KEY_RETURN:
-      case this.keys.KEY_ENTER:
-        this.write(this.ansi.eraseDown);
-
-        return {
-          value: this.selected.filter(Boolean),
-          then: this.options[0].then,
-        };
-      default:
-        return null;
-    }
   }
 }
 

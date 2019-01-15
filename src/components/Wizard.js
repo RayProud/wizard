@@ -1,3 +1,5 @@
+// TODO - Put less responsibility in components.
+
 import Component from './Component';
 
 import list from './List';
@@ -5,15 +7,15 @@ import listToggle from './ListToggle';
 
 class Wizard extends Component {
   constructor(steps, styles, components) {
-    super();
-
-    this.components = {
-      list,
-      listToggle,
-      ...components,
-    };
+    super(styles);
 
     const styleDefaults = {
+      preserveAnswer: true,
+      question: {
+        color: this.colors.white,
+        prefix: '',
+        paddingLeft: 0,
+      },
       caret: {
         icon: '❯',
         color: this.colors.white,
@@ -25,7 +27,6 @@ class Wizard extends Component {
         defaultColor: this.colors.gray,
         selectedColor: this.colors.white,
         toggledColor: this.colors.red,
-        preserveAnswer: true,
         paddingLeft: 2,
         toggle: {
           icon: '*',
@@ -34,7 +35,12 @@ class Wizard extends Component {
           paddingLeft: 0,
         },
       },
-      question: { color: this.colors.white, prefix: '', paddingLeft: 0 },
+    };
+
+    this.components = {
+      list,
+      listToggle,
+      ...components,
     };
 
     this.styles = {
@@ -46,68 +52,57 @@ class Wizard extends Component {
     this.selections = {};
   }
 
-  init() {
+  async init() {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
     this.write(this.ansi.cursorHide);
 
-    this.handleEscape();
+    const selections = await this.traverse(this.steps);
 
-    return this.traverse(this.steps).then(selections => {
-      this.stopListeningReadline();
-
-      return selections;
-    });
+    return selections;
   }
 
-  traverse(section) {
-    return new Promise(async (resolve, reject) => {
-      if (!this.validateSection(section)) {
-        this.write('Error in Configuration');
-        this.cleanAndExit();
-      }
+  async traverse(section) {
+    try {
+      return new Promise(async (resolve, reject) => {
+        if (!this.validateSection(section)) {
+          this.cleanAndExit();
+          throw new Error('Invalid configuration');
+        }
+        const ComponentType = this.components[section.type];
+        if (ComponentType) {
+          const component = new ComponentType(section, this.styles);
+          const response = await component.init();
+          this.selections[section.id] = response.value;
 
-      const ComponentType = this.components[section.type];
-
-      if (ComponentType) {
-        const component = new ComponentType(section, this.styles);
-        const response = await component.init();
-        this.selections[section.id] = response.value;
-
-        if (!response.then) {
+          if (section.then && section.then[response.then]) {
+            resolve(await this.traverse(section.then[response.then]));
+            return null;
+          }
+          if (!response.then) {
+            this.write(this.ansi.cursorShow);
+            resolve(this.selections);
+            return null;
+          }
+          if (!section.then) {
+            this.write(this.ansi.cursorShow);
+            reject(new Error('Invalid configuration'));
+            return null;
+          }
           this.write(this.ansi.cursorShow);
-          resolve(this.selections);
+          reject(new Error('An unknown error occured'));
           return null;
         }
-
-        if (!section.then) {
-          this.write(this.ansi.cursorShow);
-          reject(`Section '${section.id}' doesn't have 'then' property`);
-          return null;
-        }
-
-        if (section.then && section.then[response.then]) {
-          resolve(await this.traverse(section.then[response.then]));
-          return null;
-        }
-
         this.write(this.ansi.cursorShow);
-        reject('Unknown error');
+        reject(new Error('Invalid configuration'));
         return null;
-      }
-
-      this.write(this.ansi.cursorShow);
-      reject(
-        `Type ${
-          section.type
-        } isn't implemented yet. You can write your own custom components.\n`,
-      );
-      return null;
-    }).catch(e => {
-      console.error(this.colors.red(e));
+      });
+    } catch (err) {
+      this.write(this.colors.red(err));
       this.cleanAndExit();
-    });
+      return null;
+    }
   }
 
   validateSection(section) {

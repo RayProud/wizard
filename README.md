@@ -18,13 +18,11 @@ import Wizard from 'wizard';
 
 import questions from './questions';
 
-const main = async () => {
-  const wizard = new Wizard(questions);
-  const selections = await wizard.init();
+const wizard = new Wizard(questions);
+wizard.init().then(selections => {
   console.log(selections);
-};
-
-main();
+  process.exit();
+});
 ```
 
 ## Api
@@ -52,8 +50,8 @@ The _Questions Object_ represents every step of your setup wizard. It is an infi
 Every `section` of the _Questions Object_ must have the following fields:
 
 - **question** (string) Your question
-- **id** (string) The variable name that the answer will be stored under.
-- **type** (string) The type of input asociated with this question (See _Input types_).
+- **id** (string) The key that the answer will be stored under.
+- **type** (string) The input component type (See _Input types_).
 
 Depending on the input type, you may be required to have:
 
@@ -106,18 +104,23 @@ The styles object is passed in on the creation of the wizard. There are defaults
 
 ```
 {
+  preserveAnswer: bool - Preserve the previous question when finished
+  question: {
+    color: function - The color of the question
+    prefex: string - Question text prefix
+    paddingLeft: int - Left padding for question
+  }
   caret : {
     icon: string - The character representing the caret
     color: function - The color of the caret
     paddingRight: int - Right padding for the caret
     paddingLeft: int - Left padding for the caret
-  },
+  }
   list: {
     wrapToTop: bool - Whether the caret wraps to top
     defaultColor: function - The color of non-selected items
     selectedColor: function - The color of currently selected item
     toggledColor: function - The color of toggled items
-    preserveAnswer: bool - Whether the previous questions and answers are printed
     paddingLeft: int - Left padding for the whole list
     toggle: {
       icon: string - The character representing selected items
@@ -145,44 +148,36 @@ Right now Wizard includes the following input types:
   - options (Array of Options)
 - Use it by selecting `listToggle` in your questions object: `type: 'listToggle'`
 
-### Custom Components
+## Custom Inputs
 
-You can make your very own personalized inputs if you can't achieve what you wish through styling. A `Component` class is made available through: `import { Component } from 'wizard` that allows you to create and use your own inputs.
+You can make your very own personalized inputs if the ones provided don't suit your needs. A `Component` class is available by importing it -  `import { Component } from 'wizard`. It provides a number of methods and events to extend wizard however you wish.
 
-Each Input must have an `init` method.
+Each Input must have an `init` and an `update` method.
 
-- **init** A method that starts your input - This must be a promise!
+- **init()** Starts your input component - This is a promise that will return the users selected or provided input.
+- **update()** Repaints the screen. Leave empty if making a simple input.
 
 To create a basic component:
 
-```
+```javascript
 import { Component } from 'wizard';
 
 class MyComponent extends Component {
+  constructor() {
+    super();
+  }
+
   init() {
     return new Promise(resolve => {
-      this.write('Welcome to my component!');
-      this.newline();
+      this.onKeySpace = () => {
+        this.write('Space Pressed!');
+      }
 
-      process.stdin.on('data', key => {
-        const value = this.handleInput(key);
-        if (value !== null) {
-          resolve(value);
-        }
-      });
+      this.initialize('My new input!');
     });
   }
 
-  handleInput(key) {
-    switch(key) {
-      this.keys.KEY_SPACE:
-        this.write(this.colors.red('Space pressed'));
-	this.newline();
-	return 'some value';
-      default:
-        return null;
-    }
-  }
+  update() {}
 }
 ```
 
@@ -205,4 +200,50 @@ const main = async () => {
 };
 ```
 
-For coloring, we make the `chalk` library useful by way of `this.color`. Check out the library here: https://github.com/chalk/chalk
+### Methods
+
+The `Component` class provides a number of methods to use when creating your input.
+
+#### `initialize(question)` Initialize the component.
+
+- **question** (string) The questions text.
+
+#### `write(text)` Write string to screen.
+
+- **text** (string) Text to write to the screen.
+
+#### `newline()` Write a newline to the screen.
+
+#### `clear()` Clear the components output.
+
+#### `cleanAndExit()` Restore the cursor and gracefully exit.
+
+
+### Events
+
+A number of `keyPress` events can be handled. The only manditory handler is for `onKeyEnter`. This must resolve the component and clear the screen for the next question. The following event handlers are available:
+
+- **onKeyEnter** 
+
+- **onKeyUp**
+
+- **onKeyDown**
+
+- **onKeyLeft**
+
+- **onKeyRight**
+
+- **onKeySpace**
+
+Example:
+
+```javascript
+this.onKeyEnter = () => {
+  this.clear();
+  resolve('test');
+}
+```
+
+---
+
+We use the `chalk` library for coloring, and `ansi-escapes` for cursor manipulation. Access them through `this.color` and `this.ansi` respectively.

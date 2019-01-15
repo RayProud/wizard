@@ -97,6 +97,10 @@ class Wizard extends Component {
         this.write(this.ansi.cursorShow);
         reject(new Error('Invalid configuration'));
         return null;
+      }).then(results => {
+        process.stdin.pause();
+
+        return results;
       });
     } catch (err) {
       this.write(this.colors.red(err));

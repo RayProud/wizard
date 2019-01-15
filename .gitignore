@@ -1,3 +1,6 @@
 node_modules
 lib
 example/build
+
+# Mac Specific
+.DS_Store

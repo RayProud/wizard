@@ -6,6 +6,7 @@ class List extends Component {
 
     this.styles = styles;
     this.question = question.question;
+    this.questionId = question.id;
     this.options = question.options;
 
     this.chosen = 0;
@@ -13,6 +14,9 @@ class List extends Component {
 
   init() {
     return new Promise(resolve => {
+      if (!this.options || !this.options.length)
+        this.throw(`couldn't find options in question '${this.questionId}'`);
+
       this.onKeyEnter = () => {
         this.clear();
         resolve(this.options[this.chosen]);

@@ -63,21 +63,31 @@ class Wizard extends Component {
     return selections;
   }
 
-  async traverse(section) {
-    try {
-      return new Promise(async (resolve, reject) => {
-        if (!this.validateSection(section)) {
-          this.cleanAndExit();
-          throw new Error('Invalid configuration');
-        }
-        const ComponentType = this.components[section.type];
-        if (ComponentType) {
+  traverse(section) {
+    return new Promise(async (resolve, reject) => {
+      if (!this.validateSection(section)) {
+        reject(
+          new Error(
+            `Invalid configuration — check the docs to ensure the question was written by the rules`,
+          ),
+        );
+      }
+
+      const ComponentType = this.components[section.type];
+      if (ComponentType) {
+        try {
           const component = new ComponentType(section, this.styles);
           const response = await component.init();
           this.selections[section.id] = response.value;
 
           if (section.then && section.then[response.then]) {
-            resolve(await this.traverse(section.then[response.then]));
+            try {
+              const data = await this.traverse(section.then[response.then]);
+              resolve(data);
+            } catch (err) {
+              reject(err);
+            }
+
             return null;
           }
           if (!response.then) {
@@ -87,33 +97,53 @@ class Wizard extends Component {
           }
           if (!section.then) {
             this.write(this.ansi.cursorShow);
-            reject(new Error('Invalid configuration'));
+            reject(
+              new Error(
+                `Invalid configuration — couldn't find 'then' key in '${
+                  section.id
+                }' section`,
+              ),
+            );
             return null;
           }
-          this.write(this.ansi.cursorShow);
-          reject(new Error('An unknown error occured'));
-          return null;
+
+          if (!section.then[response.then]) {
+            this.write(this.ansi.cursorShow);
+            reject(
+              new Error(
+                `Invalid configuration — couldn't find key '${
+                  response.then
+                }' in 'then' of '${section.id}' section`,
+              ),
+            );
+            return null;
+          }
+        } catch (err) {
+          reject(`A component error occured — ${err}`);
         }
+
         this.write(this.ansi.cursorShow);
-        reject(new Error('Invalid configuration'));
+        reject(new Error('An unknown error occured'));
         return null;
-      }).then(results => {
+      }
+      this.write(this.ansi.cursorShow);
+      reject(new Error('Invalid configuration'));
+      return null;
+    })
+      .then(results => {
         process.stdin.pause();
 
         return results;
+      })
+      .catch(err => {
+        this.write(this.colors.red(err));
+        this.cleanAndExit();
+        return null;
       });
-    } catch (err) {
-      this.write(this.colors.red(err));
-      this.cleanAndExit();
-      return null;
-    }
   }
 
   validateSection(section) {
-    return (
-      (section.question || section.options || section.id || section.type) &&
-      true
-    );
+    return section.question && section.id && section.type && true;
   }
 }
 

@@ -15,8 +15,11 @@ class ListToggle extends Component {
 
   init() {
     return new Promise(resolve => {
-      if (!this.options || !this.options.length)
-        this.throw(`couldn't find options in question '${this.questionId}'`);
+      if (!this.options || !this.options.length) {
+        throw `Invalid configuration - Could not find options in question '${
+          this.questionId
+        }'`;
+      }
 
       this.onKeyEnter = () => {
         this.clear();

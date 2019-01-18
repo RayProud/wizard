@@ -67,9 +67,7 @@ class Wizard extends Component {
     return new Promise(async (resolve, reject) => {
       if (!this.validateSection(section)) {
         reject(
-          new Error(
-            `Invalid configuration — check the docs to ensure the question was written by the rules`,
-          ),
+          new Error(`Invalid configuration - There is an error in your config`),
         );
       }
 
@@ -99,9 +97,9 @@ class Wizard extends Component {
             this.write(this.ansi.cursorShow);
             reject(
               new Error(
-                `Invalid configuration — couldn't find 'then' key in '${
+                `Invalid configuration - Could not find key 'then' in section '${
                   section.id
-                }' section`,
+                }`,
               ),
             );
             return null;
@@ -111,15 +109,15 @@ class Wizard extends Component {
             this.write(this.ansi.cursorShow);
             reject(
               new Error(
-                `Invalid configuration — couldn't find key '${
+                `Invalid configuration — Could not find key '${
                   response.then
-                }' in 'then' of '${section.id}' section`,
+                }' in 'then' of section '${section.id}'`,
               ),
             );
             return null;
           }
         } catch (err) {
-          reject(`A component error occured — ${err}`);
+          reject(err);
         }
 
         this.write(this.ansi.cursorShow);
@@ -127,7 +125,13 @@ class Wizard extends Component {
         return null;
       }
       this.write(this.ansi.cursorShow);
-      reject(new Error('Invalid configuration'));
+      reject(
+        new Error(
+          `Invalid configuration - Unknown component type '${
+            section.type
+          }' referenced`,
+        ),
+      );
       return null;
     })
       .then(results => {

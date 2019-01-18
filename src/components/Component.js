@@ -76,6 +76,7 @@ class Component {
 
   /** Exit gracefully. */
   cleanAndExit() {
+    this.newline();
     this.write(this.ansi.cursorShow);
     process.exit();
   }

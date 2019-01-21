@@ -76,11 +76,7 @@ Example:
     question2: {
       question: 'Question 2',
       id: 'question-2',
-      type: 'list',
-      options: [
-        { name: 'Answer 1', value: 'answer-1' },
-        { name: 'Answer 2', value: 'answer-2' },
-      ]
+      type: 'text',
     },
     question3: {
       question: 'Question 3',
@@ -222,7 +218,7 @@ The `Component` class provides a number of methods to use when creating your inp
 
 A number of `keyPress` events can be handled. The only manditory handler is for `onKeyEnter`. This must resolve the component and clear the screen for the next question. The following event handlers are available:
 
-- **onKeyEnter** 
+- **onKeyEnter**
 
 - **onKeyUp**
 

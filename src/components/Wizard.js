@@ -4,6 +4,7 @@ import Component from './Component';
 
 import list from './List';
 import listToggle from './ListToggle';
+import text from './Text';
 
 class Wizard extends Component {
   constructor(steps, styles, components) {
@@ -40,6 +41,7 @@ class Wizard extends Component {
     this.components = {
       list,
       listToggle,
+      text,
       ...components,
     };
 
@@ -78,7 +80,10 @@ class Wizard extends Component {
           const response = await component.init();
           this.selections[section.id] = response.value;
 
-          if (section.then && section.then[response.then]) {
+          if (
+            (section.then && section.then[response.then]) ||
+            (section.type === 'text' && section.then)
+          ) {
             try {
               const data = await this.traverse(section.then[response.then]);
               resolve(data);

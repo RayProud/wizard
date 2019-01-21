@@ -10,6 +10,7 @@
     "watch:example": "babel example/src -d example/build -w",
     "build:example": "babel example/src -d example/build",
     "precommit": "lint-staged",
+    "format": "prettier --write ./**/**/*.js",
     "prepare": "npm run build"
   },
   "repository": {

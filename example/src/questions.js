@@ -7,6 +7,16 @@ export default {
     { name: 'Custom', value: 'custom', then: 'custom' },
   ],
   then: {
+    email: {
+      question: 'Type in your email:',
+      id: 'email',
+      type: 'text',
+      then: {
+        question: 'Type in your login:',
+        id: 'login',
+        type: 'text',
+      },
+    },
     template: {
       question: 'Pick a template:',
       id: 'template',
@@ -47,9 +57,16 @@ export default {
               id: 'useReact',
               type: 'list',
               options: [
-                { name: 'Yes', value: 'yes' },
-                { name: 'No', value: 'no' },
+                { name: 'Yes', value: 'yes', then: 'askTemplateName' },
+                { name: 'No', value: 'no', then: 'askTemplateName' },
               ],
+              then: {
+                askTemplateName: {
+                  question: 'What will be the name of this configuration?',
+                  id: 'templateName',
+                  type: 'text',
+                },
+              },
             },
           },
         },

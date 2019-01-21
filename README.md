@@ -143,6 +143,10 @@ Right now Wizard includes the following input types:
   - options (Array of Options)
 - Use it by selecting `listToggle` in your questions object: `type: 'listToggle'`
 
+#### `Text` - A simple input, submit with `Enter`
+
+- Use it by selecting `text` in your questions object: `type: 'text'`
+
 ## Custom Inputs
 
 You can make your very own personalized inputs if the ones provided don't suit your needs. A `Component` class is available by importing it -  `import { Component } from 'wizard`. It provides a number of methods and events to extend wizard however you wish.
